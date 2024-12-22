@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package csv_to_xml_service;
+
+// Mensagem para requisição e resposta
+message ConvertCsvToXmlAndSaveRequest {
+    string file_name = 1; // Nome do arquivo CSV
+}
+
+message ConvertCsvToXmlAndSaveResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Serviço para conversão
+service CsvToXmlService {
+    rpc ConvertCsvToXmlAndSave (ConvertCsvToXmlAndSaveRequest) returns (ConvertCsvToXmlAndSaveResponse);
+}

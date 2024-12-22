@@ -1,0 +1,36 @@
+services:
+  grpc-server:
+    build: ./grpc_server   # Caminho onde está o Dockerfile do gRPC server
+    container_name: grpc-server
+    ports:
+      - "50051:50051"      # Mapeia a porta do container gRPC para a máquina host
+    volumes:
+      - grpc-server:/app/media   # Volume para persistência de arquivos
+    environment:
+      # Variáveis de ambiente para o gRPC server
+      - GRPC_SERVER_PORT=50051
+      - MAX_WORKERS=10
+      - MEDIA_PATH=/app/media
+      - DBNAME=mydatabase
+      - DBUSERNAME=myuser
+      - DBPASSWORD=mypassword
+      - DBHOST=db
+      - DBPORT=5432
+    depends_on:
+      - db                 # Define dependência do serviço de banco de dados
+
+  db:
+    image: postgres:latest   # Imagem oficial do PostgreSQL
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: myuser       # Usuário do banco de dados
+      POSTGRES_PASSWORD: mypassword   # Senha do banco de dados
+      POSTGRES_DB: mydatabase     # Nome do banco de dados
+    ports:
+      - "5432:5432"              # Mapeia a porta do PostgreSQL para a máquina host
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # Volume para persistência do banco de dados
+
+volumes:
+  grpc-server:   # Volume para o gRPC server (armazenamento de mídia)
+  pgdata:        # Volume para o PostgreSQL (armazenamento do banco de dados)
