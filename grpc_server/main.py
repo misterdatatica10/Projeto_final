@@ -3,10 +3,15 @@ import grpc
 import send_file_service
 import file_conversion_service
 import csv_to_xml_service
+import file_upload_service
+import server_services_pb2_grpc
+import file_conversion_service_pb2_grpc
 import csv_to_xml_service_pb2_grpc
+import file_upload_service_pb2_grpc
 from settings import GRPC_SERVER_PORT, MAX_WORKERS
 
 def serve():
+
     # Cria o servidor gRPC
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=MAX_WORKERS),
@@ -16,9 +21,24 @@ def serve():
         ]
     )
 
+    # Registra o SendFileService
+    server_services_pb2_grpc.add_SendFileServiceServicer_to_server(
+        send_file_service.SendFileService(), server
+    )
+
+    # Registra o FileConversionService
+    file_conversion_service_pb2_grpc.add_FileConversionServiceServicer_to_server(
+        file_conversion_service.FileConversionService(), server
+    )
+
     # Registra o CsvToXmlService
     csv_to_xml_service_pb2_grpc.add_CsvToXmlServiceServicer_to_server(
         csv_to_xml_service.CsvToXmlService(), server
+    )
+
+    # Registra o FileUploadService
+    file_upload_service_pb2_grpc.add_FileUploadServiceServicer_to_server(
+        file_upload_service.FileUploadService(), server
     )
 
     # Inicia o servidor
