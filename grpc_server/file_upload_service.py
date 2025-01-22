@@ -16,6 +16,7 @@ class FileUploadService(file_upload_service_pb2_grpc.FileUploadServiceServicer):
             # Abrir o arquivo para escrita imediatamente
             with open(os.path.join(MEDIA_PATH, "uploaded_file.csv"), 'wb') as f:
                 first_chunk = True  # Flag para garantir que processamos o primeiro chunk
+                previous_line = None  # Armazena a linha anterior para evitar quebra extra
 
                 for chunk in request_iterator:
                     # No primeiro chunk, defina o nome do arquivo
@@ -27,9 +28,18 @@ class FileUploadService(file_upload_service_pb2_grpc.FileUploadServiceServicer):
                             file_name = "uploaded_file.csv"  # Caso não tenha nome no primeiro chunk
                             file_path = os.path.join(MEDIA_PATH, file_name)
                         first_chunk = False  # Marca que o primeiro chunk foi processado
+                        continue  # Ignora o primeiro chunk (não contém dados)
 
-                    # Agora, escreva os dados no arquivo, incluindo quebras de linha (se necessário)
-                    f.write(chunk.content + b'\n')
+                    # Adiciona a linha anterior (se existir), sem adicionar uma nova quebra no final
+                    if previous_line:
+                        f.write(previous_line + b'\n')
+
+                    # Atualiza a linha anterior com o conteúdo atual
+                    previous_line = chunk.content
+
+                # Escreve a última linha (se existir), sem adicionar uma quebra de linha extra
+                if previous_line:
+                    f.write(previous_line)
 
             # Retorna sucesso e o caminho do arquivo
             if not file_path:

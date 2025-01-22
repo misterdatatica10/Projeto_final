@@ -2,16 +2,21 @@ import grpc
 import send_file_service_pb2
 import send_file_service_pb2_grpc
 
-def generate_chunks(file_path, chunk_size=1024):
-    """Função geradora que lê o arquivo em chunks."""
-    with open(file_path, 'rb') as f:
-        while True:
-            content = f.read(chunk_size)
-            if not content:  # Quando acabar o arquivo, encerra
-                break
+def stream_csv(file_path):
+    """Função geradora que lê o arquivo linha por linha e envia como chunks."""
+    # Envia o nome do arquivo no primeiro chunk, sem conteúdo
+    yield send_file_service_pb2.FileChunk(
+        file_name=file_path.split('/')[-1],  # Nome do arquivo extraído do caminho
+        content=b''  # Sem conteúdo no primeiro chunk
+    )
+
+    # Envia o conteúdo do arquivo linha por linha
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            # Remove a quebra de linha e codifica a linha
             yield send_file_service_pb2.FileChunk(
-                file_name=file_path.split('/')[-1],  # Envia o nome do arquivo no primeiro chunk
-                content=content
+                file_name='',  # Nome do arquivo já enviado no primeiro chunk
+                content=line.rstrip('\n').encode('utf-8')  # Remove quebra de linha antes de enviar
             )
 
 def main():
@@ -24,7 +29,7 @@ def main():
 
     # Envia o arquivo como streaming
     try:
-        response = stub.UploadFile(generate_chunks(file_path))
+        response = stub.UploadFile(stream_csv(file_path))
         print(f"Response from server: {response.message}")
     except grpc.RpcError as e:
         print(f"gRPC error: {e.details()} (code: {e.code()})")
