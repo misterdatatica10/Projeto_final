@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service FileUploadService {
+  rpc UploadFile (stream FileChunk) returns (UploadStatus);
+}
+
+message FileChunk {
+  bytes content = 1;      // Conteúdo do arquivo em partes (em binário)
+  string file_name = 2;   // Nome do arquivo, enviado no primeiro pedaço
+}
+
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}
