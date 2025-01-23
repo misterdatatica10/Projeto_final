@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package validate_schema_service;
+
+// Define o serviço de validação de schema
+service ValidateSchemaService {
+    // Método para validar um XML contra um schema XSD
+    rpc Validate (ValidateRequest) returns (ValidateSchemaResponse);
+}
+
+// Mensagem para a requisição de validação
+message ValidateRequest {
+    // Conteúdo do schema XSD fornecido pelo cliente
+    string xsd_content = 1;
+}
+
+// Mensagem de resposta da validação
+message ValidateSchemaResponse {
+    // Indica se o XML é válido
+    bool is_valid = 1;
+
+    // Mensagem de erro caso a validação falhe
+    string error_message = 2;
+}

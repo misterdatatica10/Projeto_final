@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package filtros_service;
+
+// Serviço de consulta com filtros
+service FiltrosService {
+  rpc ConsultarComFiltros(FiltrosRequest) returns (FiltrosResponse);
+}
+
+// Requisição para consulta com filtros
+message FiltrosRequest {
+  string xpath_query = 1; // Query em XPath
+}
+
+// Resposta com os resultados da consulta
+message FiltrosResponse {
+  repeated string resultados = 1; // Lista de resultados correspondentes
+}
