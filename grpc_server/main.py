@@ -4,14 +4,15 @@ import send_file_service
 import file_conversion_service
 import csv_to_xml_service
 import file_upload_service
+import pesquisa_texto_service  # Importa o serviço de pesquisa de texto
 import server_services_pb2_grpc
 import file_conversion_service_pb2_grpc
 import csv_to_xml_service_pb2_grpc
 import file_upload_service_pb2_grpc
+import pesquisa_texto_service_pb2_grpc  # Importa os stubs gRPC gerados
 from settings import GRPC_SERVER_PORT, MAX_WORKERS
 
 def serve():
-
     # Cria o servidor gRPC
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=MAX_WORKERS),
@@ -39,6 +40,12 @@ def serve():
     # Registra o FileUploadService
     file_upload_service_pb2_grpc.add_FileUploadServiceServicer_to_server(
         file_upload_service.FileUploadService(), server
+    )
+
+    # Registra o PesquisaTextoService
+    # Instancia o serviço de pesquisa de texto e registra no servidor
+    pesquisa_texto_service_pb2_grpc.add_PesquisaTextoServiceServicer_to_server(
+        pesquisa_texto_service.PesquisaTextoService(), server
     )
 
     # Inicia o servidor

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pesquisa_texto;
+
+service PesquisaTextoService {
+    rpc BuscarTexto(BuscaRequest) returns (BuscaResponse);
+}
+
+message BuscaRequest {
+    string termo = 1;  // O texto a ser pesquisado no XML
+}
+
+message BuscaResponse {
+    repeated string resultados = 1;  // Lista de resultados encontrados
+}
